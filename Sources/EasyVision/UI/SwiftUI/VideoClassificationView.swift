@@ -9,7 +9,10 @@ public struct VideoClassificationView<ViewModel: VideoClassificationViewModelPro
     public var body: some View {
         ZStack(alignment: .bottom) {
             VideoPreview()
-
+            viewModel.currentClassification.map { classification in
+                ClassificationLabel(classification: classification)
+                    .padding(EdgeInsets(top: 0, leading: 8, bottom: 16, trailing: 8))
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 
 public struct ClassificationLabel: View {
 
-    @Binding public var classification: Classification
+    public var classification: Classification
 
     public var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
@@ -23,6 +23,6 @@ public struct ClassificationLabel: View {
 
 public struct ClassificationLabel_Previews: PreviewProvider {
     public static var previews: some View {
-        ClassificationLabel(classification: .constant(Classification(label: "Fish", confidence: 0.675)))
+        ClassificationLabel(classification: Classification(label: "Fish", confidence: 0.675))
     }
 }
