@@ -13,7 +13,7 @@ public class VideoClassificationViewController<ViewModel: VideoClassificationVie
             classificationSubscription = vm.classificationPublisher.sink { [weak self] classification in
                 self?.set(classification: classification)
             }
-            previewLayer?.session = vm.session
+            previewLayer.session = vm.session
         }
     }
 
