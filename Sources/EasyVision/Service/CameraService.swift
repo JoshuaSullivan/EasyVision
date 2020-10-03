@@ -31,10 +31,10 @@ public protocol CameraServiceProtocol: class {
     var pixelBufferOutput: AnyPublisher<CVPixelBuffer, CameraServiceError> { get }
 
     /// Start live video capture.
-    func beginVideoCapture()
+    func startVideoCapture()
 
     /// Stop live video capture.
-    func endVideoCapture()
+    func stopVideoCapture()
 
     /// Take a photo.
     ///
@@ -49,7 +49,7 @@ public protocol CameraServiceProtocol: class {
 /// - Note: You should not attempt to instantiate more than one `CameraService` at a time.
 ///         AVFoundation doesn't like multiple objects attempting to configure the input.
 ///
-open class CameraService: NSObject, CameraServiceProtocol {
+public class CameraService: NSObject, CameraServiceProtocol {
 
     public var imageOutput: AnyPublisher<UIImage, CameraServiceError> {
         return imagePublisher
@@ -139,12 +139,12 @@ open class CameraService: NSObject, CameraServiceProtocol {
 // MARK: - CameraServiceProtocol
 
     // Protocol implementation.
-    public func beginVideoCapture() {
+    public func startVideoCapture() {
         session.startRunning()
     }
 
     // Protocol implementation.
-    public func endVideoCapture() {
+    public func stopVideoCapture() {
         session.stopRunning()
     }
 

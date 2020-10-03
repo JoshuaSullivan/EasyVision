@@ -1,13 +1,27 @@
 import UIKit
 import AVFoundation
+import Combine
 
-open class VideoPreviewViewController: UIViewController {
+public class VideoClassificationViewController<ViewModel: VideoClassificationViewModelProtocol>: UIViewController {
+
+    public var viewModel: ViewModel? {
+        didSet {
+            guard let vm = viewModel else {
+                hideLabel()
+                return
+            }
+            classificationSubscription = vm.classificationPublisher.sink { [weak self] classification in
+                self?.set(classification: classification)
+            }
+            previewLayer?.session = vm.session
+        }
+    }
 
     public var session: AVCaptureSession? {
         didSet {
             previewLayer?.removeFromSuperlayer()
             guard let session = session else { return }
-            var layer = AVCaptureVideoPreviewLayer(session: session)
+            let layer = AVCaptureVideoPreviewLayer(session: session)
             layer.videoGravity = .resizeAspectFill
             layer.frame = self.view.layer.bounds
             self.view.layer.addSublayer(layer)
@@ -15,9 +29,9 @@ open class VideoPreviewViewController: UIViewController {
         }
     }
 
-    open lazy var labelView: UIView = {
+    public lazy var labelView: UIView = {
         let view = UIView(frame: .zero)
-        view.backgroundColor = .black.withAlphaComponent(0.7)
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         view.layer.cornerRadius = 8.0
         view.translatesAutoresizingMaskIntoConstraints = false
 
@@ -37,7 +51,7 @@ open class VideoPreviewViewController: UIViewController {
         return view
     }()
 
-    open lazy var featureLabel: UILabel = {
+    public lazy var featureLabel: UILabel = {
         let label = UILabel(frame: .zero)
         label.font = .preferredFont(forTextStyle: .subheadline)
         label.textColor = .white
@@ -45,7 +59,7 @@ open class VideoPreviewViewController: UIViewController {
         return label
     }()
 
-    open lazy var confidenceLabel: UILabel = {
+    public lazy var confidenceLabel: UILabel = {
         let label = UILabel(frame: .zero)
         label.font = .preferredFont(forTextStyle: .headline)
         label.textColor = .white
@@ -58,9 +72,9 @@ open class VideoPreviewViewController: UIViewController {
 
     public var previewLayer: AVCaptureVideoPreviewLayer?
 
-    public var cameraService: CameraServiceProtocol?
+    private var classificationSubscription: AnyCancellable?
 
-    open override func viewDidLoad() {
+    public override func viewDidLoad() {
         super.viewDidLoad()
 
         view.addSubview(labelView)
@@ -70,19 +84,19 @@ open class VideoPreviewViewController: UIViewController {
         labelView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32).isActive = true
     }
 
-    open override func viewWillAppear(_ animated: Bool) {
+    public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        cameraService?.beginVideoCapture()
+        viewModel?.startVideoCapture()
     }
 
-    open override func viewDidDisappear(_ animated: Bool) {
+    public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        cameraService?.endVideoCapture()
+        viewModel?.stopVideoCapture()
     }
 
-    open func set(classification: Classification?) {
+    public func set(classification: Classification?) {
         guard let classification = classification else {
             hideLabel()
             return

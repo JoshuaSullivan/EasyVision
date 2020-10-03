@@ -17,6 +17,8 @@ public protocol ClassificationServiceProtocol: class {
     /// A publisher that asynchronously emits the results of classifications recieved using the input
     /// of the `classify(image:)` method.
     ///
+    /// - Note: This publisher sends on the main thread.
+    ///
     var classifications: AnyPublisher<[Classification], ClassificationServiceError> { get }
 
     /// Provide an image to be classified.
@@ -39,7 +41,7 @@ public protocol ClassificationServiceProtocol: class {
     var maxResults: Int? { get set }
 }
 
-open class ClassificationService: ClassificationServiceProtocol {
+public class ClassificationService: ClassificationServiceProtocol {
 
     /// Store the Vision Core ML request that wraps our ML model.
     private var request: VNCoreMLRequest!
@@ -48,7 +50,7 @@ open class ClassificationService: ClassificationServiceProtocol {
     public var maxResults: Int?
 
     /// Converts the concrete publisher into an AnyPublisher.
-    open var classifications: AnyPublisher<[Classification], ClassificationServiceError> {
+    public var classifications: AnyPublisher<[Classification], ClassificationServiceError> {
         classificationPublisher
             .receive(on: DispatchQueue.main)
             .share()
@@ -59,7 +61,7 @@ open class ClassificationService: ClassificationServiceProtocol {
     private let classificationPublisher = PassthroughSubject<[Classification], ClassificationServiceError>()
 
     /// Initialize the service with a particular CoreML
-    open init(model: MLModel) {
+    public init(model: MLModel) {
         do {
             let visionModel = try VNCoreMLModel(for: model)
             let request = VNCoreMLRequest(model: visionModel) { [weak self] request, error in
@@ -88,7 +90,7 @@ open class ClassificationService: ClassificationServiceProtocol {
         self.classificationPublisher.send(classifications)
     }
 
-    open func classify(image: CVPixelBuffer) {
+    public func classify(image: CVPixelBuffer) {
         DispatchQueue.global(qos: .default).async {
             let handler = VNImageRequestHandler(cvPixelBuffer: image, orientation: .up)
             do {

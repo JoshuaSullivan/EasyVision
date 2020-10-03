@@ -21,3 +21,7 @@ public struct Classification: Equatable, Comparable, Identifiable {
 
     public var id: String { label }
 }
+
+public extension Classification {
+    static var loading = Classification(label: "Loading…", confidence: 1.0)
+}
