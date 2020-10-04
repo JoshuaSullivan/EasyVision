@@ -30,6 +30,9 @@ public protocol CameraServiceProtocol: class {
     ///
     var pixelBufferOutput: AnyPublisher<CVPixelBuffer, CameraServiceError> { get }
 
+    /// The current orientation of the device, translated to a `CGImagePropertyOrientation` case.
+    var orientation: CGImagePropertyOrientation { get }
+
     /// Start live video capture.
     func startVideoCapture()
 
@@ -137,6 +140,21 @@ public class CameraService: NSObject, CameraServiceProtocol {
     }
 
 // MARK: - CameraServiceProtocol
+
+    public var orientation: CGImagePropertyOrientation {
+        switch UIDevice.current.orientation {
+        case UIDeviceOrientation.portraitUpsideDown:  // Device oriented vertically, home button on the top
+            return .left
+        case UIDeviceOrientation.landscapeLeft:       // Device oriented horizontally, home button on the right
+            return .upMirrored
+        case UIDeviceOrientation.landscapeRight:      // Device oriented horizontally, home button on the left
+            return .down
+        case UIDeviceOrientation.portrait:            // Device oriented vertically, home button on the bottom
+            return .up
+        default:
+            return .up
+        }
+    }
 
     // Protocol implementation.
     public func startVideoCapture() {

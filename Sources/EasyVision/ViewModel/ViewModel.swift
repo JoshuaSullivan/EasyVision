@@ -1,4 +1,4 @@
-import Foundation
+import UIKit
 import AVFoundation
 import Combine
 
@@ -114,7 +114,9 @@ public class CoreViewModel {
                     self?.currentClassification = nil
                 },
                 receiveValue: { [weak self] pixelBuffer in
-                    self?.classificationService.classify(image: pixelBuffer)
+                    guard let self = self else { return }
+                    let orientation = self.cameraService.orientation
+                    self.classificationService.classify(image: pixelBuffer, orientation: orientation)
                 }
             )
 

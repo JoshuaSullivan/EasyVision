@@ -27,8 +27,11 @@ public protocol ClassificationServiceProtocol: class {
     ///
     /// - Parameter image: A CVPixelBuffer containing the image to be classified. The pixel buffer will
     ///                    be automatically resized using the `.centerCrop` method if it is not square.
+    /// - Parameter orientation: The orientation of the image. It is important to pass this in with live
+    ///                          video, or you will get very poor classification results. The current
+    ///                          device orientation can be obtained from `UIDevice.current.orientation`.
     ///
-    func classify(image: CVPixelBuffer)
+    func classify(image: CVPixelBuffer, orientation: CGImagePropertyOrientation)
 
     /// Limits the number of classification results to only the N with the highest confidence values.
     /// The default value is `nil` which does not limit the number of results.
@@ -90,9 +93,9 @@ public class ClassificationService: ClassificationServiceProtocol {
         self.classificationPublisher.send(classifications)
     }
 
-    public func classify(image: CVPixelBuffer) {
+    public func classify(image: CVPixelBuffer, orientation: CGImagePropertyOrientation) {
         DispatchQueue.global(qos: .default).async {
-            let handler = VNImageRequestHandler(cvPixelBuffer: image, orientation: .up)
+            let handler = VNImageRequestHandler(cvPixelBuffer: image, orientation: orientation)
             do {
                 try handler.perform([self.request])
             } catch {
