@@ -39,7 +39,9 @@ public class ClassificationLabelView: UIView {
     }
 
     private func setupViews() {
-        let stack = UIStackView(arrangedSubviews: [defaultFeatureLabel, defaultConfidenceLabel])
+        let feature = defaultFeatureLabel
+        let confidence = defaultConfidenceLabel
+        let stack = UIStackView(arrangedSubviews: [feature, confidence])
         stack.axis = .horizontal
         stack.distribution = .fill
         stack.alignment = .firstBaseline
@@ -55,6 +57,8 @@ public class ClassificationLabelView: UIView {
         stack.topAnchor.constraint(equalTo: topAnchor, constant: 4).isActive = true
         stack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4).isActive = true
 
+        self.featureLabel = feature
+        self.confidenceLabel = confidence
     }
 
     public func update(with classification: Classification) {
