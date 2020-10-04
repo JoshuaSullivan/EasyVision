@@ -2,9 +2,9 @@ import UIKit
 import AVFoundation
 import Combine
 
-public class VideoClassificationViewController<ViewModel: VideoClassificationViewModelProtocol>: UIViewController {
+public class VideoClassificationViewController: UIViewController {
 
-    public var viewModel: ViewModel? {
+    public var viewModel: UIKitViewModelProtocol? {
         didSet {
             guard let vm = viewModel else {
                 hideLabel()

@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation
 import Combine
 
-public struct VideoClassificationView<ViewModel: VideoClassificationViewModelProtocol>: View {
+public struct VideoClassificationView<ViewModel: SwiftUIViewModelProtocol>: View {
 
     @ObservedObject public var viewModel: ViewModel
 
@@ -18,7 +18,7 @@ public struct VideoClassificationView<ViewModel: VideoClassificationViewModelPro
 }
 
 public struct VideoClassificationView_Previews: PreviewProvider {
-    private static let viewModel = VideoClassificationViewModel(
+    private static let viewModel = SwiftUIViewModel(
         cameraService: CameraService(),
         classificationService: ClassificationService(model: MockModel())
     )

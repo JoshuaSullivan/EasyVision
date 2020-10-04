@@ -2,8 +2,14 @@ import Foundation
 import AVFoundation
 import Combine
 
-public protocol VideoClassificationViewModelProtocol: ObservableObject {
+// MARK: - SwiftUI
 
+/// The public interface of the view model for SwiftUI views.
+///
+/// This version inherits from `ObservableObject` and exposes the classification results in the form
+/// of an `@Published` property.
+///
+public protocol SwiftUIViewModelProtocol : ObservableObject {
     /// The AVCaptureSession driving live video capture.
     ///
     /// Used to start/stop video capture as well as configuring the `AVCaptureVideoPreviewLayer`.
@@ -14,15 +20,66 @@ public protocol VideoClassificationViewModelProtocol: ObservableObject {
     ///
     var currentClassification: Classification? { get }
 
-    /// A wrapper for the `currentClassification` property that exposes it as a Publisher for UIKit.
-    var classificationPublisher: AnyPublisher<Classification?, Never> { get }
-
+    /// Start live video capture.
+    ///
     func startVideoCapture()
 
+    /// Stop live video capture.
+    ///
     func stopVideoCapture()
 }
 
-public class VideoClassificationViewModel: VideoClassificationViewModelProtocol {
+/// The SwiftUI implementation of the View Model.
+///
+public class SwiftUIViewModel: CoreViewModel, SwiftUIViewModelProtocol {
+    override public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
+        super.init(cameraService: cameraService, classificationService: classificationService)
+    }
+}
+
+// MARK: - UIKit
+
+/// The public interface of the view model for UIKit classes.
+///
+/// This version does not inherit from ObservableObject, which is not a thing in UIKit. It also
+/// exposes the classification results as a publisher rather than an `@Published` variable.
+///
+public protocol UIKitViewModelProtocol {
+    /// The AVCaptureSession driving live video capture.
+    ///
+    /// Used to start/stop video capture as well as configuring the `AVCaptureVideoPreviewLayer`.
+    ///
+    var session: AVCaptureSession { get }
+
+    /// A publisher that sends the latest classification result.
+    ///
+    var classificationPublisher: AnyPublisher<Classification?, Never> { get }
+
+    /// Start live video capture.
+    ///
+    func startVideoCapture()
+
+    /// Stop live video capture.
+    ///
+    func stopVideoCapture()
+}
+
+/// The UIKit implementation of the View Model.
+///
+public class UIKitViewModel: CoreViewModel, UIKitViewModelProtocol {
+    override public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
+        super.init(cameraService: cameraService, classificationService: classificationService)
+    }
+}
+
+// MARK: - Core
+
+/// This class underpins both the SwiftUI and UIKit versions of the ViewModel.
+///
+/// It should never be instantiated directly. Instead, instantiate one of `SwiftUIViewModel` or `UIKitViewModel`
+/// depending on the context you are using it in.
+///
+public class CoreViewModel {
 
     public var session: AVCaptureSession { cameraService.session }
 
@@ -39,7 +96,7 @@ public class VideoClassificationViewModel: VideoClassificationViewModelProtocol 
     private var cameraSubscription: AnyCancellable?
     private var classificationSubscription: AnyCancellable?
 
-    public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
+    fileprivate init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
         self.cameraService = cameraService
         self.classificationService = classificationService
 
@@ -82,4 +139,5 @@ public class VideoClassificationViewModel: VideoClassificationViewModelProtocol 
     public func stopVideoCapture() {
         cameraService.stopVideoCapture()
     }
+
 }
