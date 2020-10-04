@@ -13,11 +13,15 @@ public class VideoClassificationViewController: UIViewController {
             classificationSubscription = vm.classificationPublisher.sink { [weak self] classification in
                 self?.set(classification: classification)
             }
-            previewLayer.session = vm.session
+            previewLayer?.removeFromSuperlayer()
+            let preview = AVCaptureVideoPreviewLayer(session: vm.session)
+            preview.frame = view.layer.bounds
+            view.layer.addSublayer(preview)
+            self.previewLayer = preview
         }
     }
 
-    private lazy var previewLayer = AVCaptureVideoPreviewLayer()
+    private var previewLayer: AVCaptureVideoPreviewLayer?
 
     @IBOutlet public weak var labelView: ClassificationLabelView?
 
