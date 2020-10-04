@@ -32,6 +32,10 @@ public class ClassificationLabelView: UIView {
 
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
+
+        if featureLabel == nil && confidenceLabel == nil {
+            setupViews()
+        }
     }
 
     private func setupViews() {
