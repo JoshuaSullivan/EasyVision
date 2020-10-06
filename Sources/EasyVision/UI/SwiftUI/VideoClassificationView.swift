@@ -8,12 +8,16 @@ public struct VideoClassificationView<ViewModel: SwiftUIViewModelProtocol>: View
 
     public var body: some View {
         ZStack(alignment: .bottom) {
-            VideoPreview()
+            VideoPreview(session: viewModel.session)
             viewModel.currentClassification.map { classification in
                 ClassificationLabel(classification: classification)
                     .padding(EdgeInsets(top: 0, leading: 8, bottom: 16, trailing: 8))
             }
         }
+    }
+
+    public init(viewModel: ViewModel) {
+        self.viewModel = viewModel
     }
 }
 

@@ -96,7 +96,7 @@ public class CoreViewModel {
     private var cameraSubscription: AnyCancellable?
     private var classificationSubscription: AnyCancellable?
 
-    public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
+    fileprivate init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
         self.cameraService = cameraService
         self.classificationService = classificationService
 

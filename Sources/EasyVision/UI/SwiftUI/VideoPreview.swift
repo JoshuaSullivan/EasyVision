@@ -3,17 +3,17 @@ import AVFoundation
 
 /// This wraps the VideoPreviewView, which provides an AVFoundation video preview layer.
 ///
-struct VideoPreview: UIViewRepresentable {
+public struct VideoPreview: UIViewRepresentable {
 
-    @EnvironmentObject var captureSession: CaptureSession
+    let session: AVCaptureSession
 
-    func makeUIView(context: Context) -> VideoPreviewView {
+    public func makeUIView(context: Context) -> VideoPreviewView {
         let preview = VideoPreviewView(frame: .zero)
-        preview.videoPreviewLayer.session = captureSession.session
+        preview.videoPreviewLayer.session = session
         return preview
     }
 
-    func updateUIView(_ uiView: VideoPreviewView, context: Context) {
+    public func updateUIView(_ uiView: VideoPreviewView, context: Context) {
         // Nothing, yet.
     }
 }
