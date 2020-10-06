@@ -76,8 +76,8 @@ public class UIKitViewModel: CoreViewModel, UIKitViewModelProtocol {
 
 /// This class underpins both the SwiftUI and UIKit versions of the ViewModel.
 ///
-/// It should never be instantiated directly. Instead, instantiate one of `SwiftUIViewModel` or `UIKitViewModel`
-/// depending on the context you are using it in.
+/// This class should never be instantiated directly. Instead, instantiate one of `SwiftUIViewModel` or
+/// `UIKitViewModel` depending on the context you are using it in.
 ///
 public class CoreViewModel {
 
@@ -96,7 +96,7 @@ public class CoreViewModel {
     private var cameraSubscription: AnyCancellable?
     private var classificationSubscription: AnyCancellable?
 
-    fileprivate init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
+    public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
         self.cameraService = cameraService
         self.classificationService = classificationService
 
