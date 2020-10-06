@@ -14,6 +14,8 @@ public struct VideoClassificationView<ViewModel: SwiftUIViewModelProtocol>: View
                     .padding(EdgeInsets(top: 0, leading: 8, bottom: 16, trailing: 8))
             }
         }
+        .onAppear { viewModel.startVideoCapture() }
+        .onDisappear { viewModel.stopVideoCapture() }
     }
 
     public init(viewModel: ViewModel) {
