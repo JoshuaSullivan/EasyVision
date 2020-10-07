@@ -16,6 +16,9 @@ public protocol SwiftUIViewModelProtocol : ObservableObject {
     ///
     var session: AVCaptureSession { get }
 
+    /// Returns a preview view for displaying live video.
+    var videoPreview: VideoPreview { get }
+
     /// A `@Published` variable containing the current classification result.
     ///
     var currentClassification: Classification? { get }
@@ -32,6 +35,11 @@ public protocol SwiftUIViewModelProtocol : ObservableObject {
 /// The SwiftUI implementation of the View Model.
 ///
 public class SwiftUIViewModel: CoreViewModel, SwiftUIViewModelProtocol {
+
+    public lazy var videoPreview: VideoPreview = {
+        return VideoPreview(session: session)
+    }()
+
     override public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
         super.init(cameraService: cameraService, classificationService: classificationService)
     }
@@ -45,11 +53,9 @@ public class SwiftUIViewModel: CoreViewModel, SwiftUIViewModelProtocol {
 /// exposes the classification results as a publisher rather than an `@Published` variable.
 ///
 public protocol UIKitViewModelProtocol {
-    /// The AVCaptureSession driving live video capture.
-    ///
-    /// Used to start/stop video capture as well as configuring the `AVCaptureVideoPreviewLayer`.
-    ///
-    var session: AVCaptureSession { get }
+
+    /// Returns a preview view for displaying live video.
+    var previewView: VideoPreviewView { get }
 
     /// A publisher that sends the latest classification result.
     ///
@@ -67,8 +73,26 @@ public protocol UIKitViewModelProtocol {
 /// The UIKit implementation of the View Model.
 ///
 public class UIKitViewModel: CoreViewModel, UIKitViewModelProtocol {
+
+    public lazy var previewView: VideoPreviewView = {
+        let view = VideoPreviewView(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.videoPreviewLayer.session = session
+        view.videoPreviewLayer.videoGravity = .resizeAspectFill
+        return view
+    }()
+
     override public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
         super.init(cameraService: cameraService, classificationService: classificationService)
+    }
+
+    override func updatePreviewOrientation(to orientation: Orientation) {
+        guard
+            let connection = previewView.videoPreviewLayer.connection,
+            connection.isVideoOrientationSupported
+        else { return }
+
+        connection.videoOrientation = orientation.avOrientation
     }
 }
 
@@ -93,7 +117,10 @@ public class CoreViewModel {
         return $currentClassification.eraseToAnyPublisher()
     }
 
+    private var orientation: Orientation = .portrait
+
     private var cameraSubscription: AnyCancellable?
+    private var orientationSubscription: AnyCancellable?
     private var classificationSubscription: AnyCancellable?
 
     fileprivate init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
@@ -115,10 +142,14 @@ public class CoreViewModel {
                 },
                 receiveValue: { [weak self] pixelBuffer in
                     guard let self = self else { return }
-                    let orientation = self.cameraService.orientation
-                    self.classificationService.classify(image: pixelBuffer, orientation: orientation)
+                    self.classificationService.classify(image: pixelBuffer, orientation: self.orientation.cgOrientation)
                 }
             )
+
+        orientationSubscription = cameraService.orientation
+            .sink { [weak self] orientation in
+                self?.set(orientation: orientation)
+            }
 
         // Set up the classification service.
 
@@ -132,6 +163,16 @@ public class CoreViewModel {
                 self?.currentClassification = classifications.first
             })
 
+    }
+
+    private func set(orientation: Orientation) {
+        self.orientation = orientation
+        updatePreviewOrientation(to: orientation)
+    }
+
+    func updatePreviewOrientation(to orientation: Orientation) {
+        // Nothing in this implementation. The child classes will override it and
+        // implement their own solutions.
     }
 
     public func startVideoCapture() {

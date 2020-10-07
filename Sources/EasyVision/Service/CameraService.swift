@@ -30,8 +30,11 @@ public protocol CameraServiceProtocol: class {
     ///
     var pixelBufferOutput: AnyPublisher<CVPixelBuffer, CameraServiceError> { get }
 
-    /// The current orientation of the device, translated to a `CGImagePropertyOrientation` case.
-    var orientation: CGImagePropertyOrientation { get }
+    /// The current orientation of the device.
+    ///
+    /// The `Orientation` type is a convenient bridge between the different orientation systems encountered.
+    ///
+    var orientation: AnyPublisher<Orientation, Never> { get }
 
     /// Start live video capture.
     func startVideoCapture()
@@ -69,7 +72,16 @@ public class CameraService: NSObject, CameraServiceProtocol {
             .eraseToAnyPublisher()
     }
 
+    /// The AVCaptureSession driving the live video.
     private(set) public var session = AVCaptureSession()
+
+    private var orientationSubscription: AnyCancellable?
+
+    private var orientationPublisher = CurrentValueSubject<Orientation, Never>(.portrait)
+
+    public var orientation: AnyPublisher<Orientation, Never> {
+        orientationPublisher.share().eraseToAnyPublisher()
+    }
 
     /// Keep a reference to the photo output so we can trigger a photo capture.
     private var photoOutput = AVCapturePhotoOutput()
@@ -137,39 +149,37 @@ public class CameraService: NSObject, CameraServiceProtocol {
             return
         }
         session.addOutput(pixelOutput)
+
+        orientationSubscription = NotificationCenter.default
+            .publisher(for: UIDevice.orientationDidChangeNotification)
+            .sink { [weak self] _ in
+                self?.set(orientation: UIDevice.current.orientation)
+            }
+        set(orientation: UIDevice.current.orientation)
     }
 
 // MARK: - CameraServiceProtocol
 
-    public var orientation: CGImagePropertyOrientation {
-        switch UIDevice.current.orientation {
-        case UIDeviceOrientation.portraitUpsideDown:  // Device oriented vertically, home button on the top
-            return .left
-        case UIDeviceOrientation.landscapeLeft:       // Device oriented horizontally, home button on the right
-            return .upMirrored
-        case UIDeviceOrientation.landscapeRight:      // Device oriented horizontally, home button on the left
-            return .down
-        case UIDeviceOrientation.portrait:            // Device oriented vertically, home button on the bottom
-            return .up
-        default:
-            return .up
-        }
-    }
-
     // Protocol implementation.
     public func startVideoCapture() {
         session.startRunning()
+        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     }
 
     // Protocol implementation.
     public func stopVideoCapture() {
         session.stopRunning()
+        UIDevice.current.endGeneratingDeviceOrientationNotifications()
     }
 
     // Protocol implementation.
     public func takePhoto() {
         let settings = AVCapturePhotoSettings()
         photoOutput.capturePhoto(with: settings, delegate: self)
+    }
+
+    private func set(orientation: UIDeviceOrientation) {
+        orientationPublisher.send(Orientation(deviceOrientation: orientation))
     }
 }
 

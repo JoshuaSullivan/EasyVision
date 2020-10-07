@@ -13,15 +13,14 @@ public class VideoClassificationViewController: UIViewController {
             classificationSubscription = vm.classificationPublisher.sink { [weak self] classification in
                 self?.set(classification: classification)
             }
-            previewLayer?.removeFromSuperlayer()
-            let preview = AVCaptureVideoPreviewLayer(session: vm.session)
-            preview.frame = view.layer.bounds
-            view.layer.addSublayer(preview)
-            self.previewLayer = preview
+            let preview = vm.previewView
+            view.addSubview(preview)
+            view.topAnchor.constraint(equalTo: preview.topAnchor).isActive = true
+            view.bottomAnchor.constraint(equalTo: preview.bottomAnchor).isActive = true
+            view.leadingAnchor.constraint(equalTo: preview.leadingAnchor).isActive = true
+            view.trailingAnchor.constraint(equalTo: preview.trailingAnchor).isActive = true
         }
     }
-
-    private var previewLayer: AVCaptureVideoPreviewLayer?
 
     @IBOutlet public weak var labelView: ClassificationLabelView?
 
