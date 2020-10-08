@@ -117,7 +117,11 @@ public class CoreViewModel {
         return $currentClassification.eraseToAnyPublisher()
     }
 
-    private var orientation: Orientation = .portrait
+    private var orientation: Orientation = .portrait {
+        didSet {
+            print("Orientation is now: \(orientation)")
+        }
+    }
 
     private var cameraSubscription: AnyCancellable?
     private var orientationSubscription: AnyCancellable?
