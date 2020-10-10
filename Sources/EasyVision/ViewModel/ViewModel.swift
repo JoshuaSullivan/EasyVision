@@ -36,11 +36,13 @@ public protocol SwiftUIViewModelProtocol : ObservableObject {
 ///
 public class SwiftUIViewModel: CoreViewModel, SwiftUIViewModelProtocol {
 
-    public lazy var videoPreview: VideoPreview = {
-        return VideoPreview(session: session)
-    }()
+    public var videoPreview: VideoPreview
+
+    private var connection: AVCaptureConnection?
 
     override public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
+        videoPreview = VideoPreview(session: cameraService.session)
+        connection = videoPreview.preview.videoPreviewLayer.connection
         super.init(cameraService: cameraService, classificationService: classificationService)
     }
 
