@@ -80,15 +80,19 @@ public class ClassificationService: ClassificationServiceProtocol {
     // TODO: This class should be updated to allow for more model types than just classifiers.
 
     private func processClassifications(for request: VNRequest, error: Error?) {
-        guard let results = request.results as? [VNClassificationObservation] else {
-            assertionFailure("Unable to process results.")
+        guard let results = request.results else {
+            // We ignore nil results.
+            return
+        }
+        guard let classificationResults = results as? [VNClassificationObservation] else {
+            print("Unable to process results: \(results)")
             return
         }
         let classifications: [Classification]
         if let maxResults = maxResults {
-            classifications = results.sorted().prefix(maxResults).map { Classification(label: $0.identifier, confidence: $0.confidence) }
+            classifications = classificationResults.sorted().prefix(maxResults).map { Classification(label: $0.identifier, confidence: $0.confidence) }
         } else {
-            classifications = results.sorted().map { Classification(label: $0.identifier, confidence: $0.confidence) }
+            classifications = classificationResults.sorted().map { Classification(label: $0.identifier, confidence: $0.confidence) }
         }
         self.classificationPublisher.send(classifications)
     }
