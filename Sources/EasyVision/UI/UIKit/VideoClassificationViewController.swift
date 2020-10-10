@@ -14,7 +14,7 @@ public class VideoClassificationViewController: UIViewController {
                 self?.set(classification: classification)
             }
             let preview = vm.previewView
-            view.addSubview(preview)
+            view.insertSubview(preview, at: 0)
             view.topAnchor.constraint(equalTo: preview.topAnchor).isActive = true
             view.bottomAnchor.constraint(equalTo: preview.bottomAnchor).isActive = true
             view.leadingAnchor.constraint(equalTo: preview.leadingAnchor).isActive = true
