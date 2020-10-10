@@ -34,7 +34,7 @@ public protocol SwiftUIViewModelProtocol : ObservableObject {
 
 /// The SwiftUI implementation of the View Model.
 ///
-public class SwiftUIViewModel: CoreViewModel, SwiftUIViewModelProtocol {
+public class SwiftUIViewModel: ViewModelCore, SwiftUIViewModelProtocol {
 
     public var videoPreview: VideoPreview
 
@@ -99,7 +99,7 @@ public protocol UIKitViewModelProtocol {
 
 /// The UIKit implementation of the View Model.
 ///
-public class UIKitViewModel: CoreViewModel, UIKitViewModelProtocol {
+public class UIKitViewModel: ViewModelCore, UIKitViewModelProtocol {
 
     public lazy var previewView: VideoPreviewView = {
         let view = VideoPreviewView(frame: .zero)
@@ -130,25 +130,27 @@ public class UIKitViewModel: CoreViewModel, UIKitViewModelProtocol {
 /// This class should never be instantiated directly. Instead, instantiate one of `SwiftUIViewModel` or
 /// `UIKitViewModel` depending on the context you are using it in.
 ///
-public class CoreViewModel {
+public class ViewModelCore {
 
+    /// The capture session which drives the live video.
     public var session: AVCaptureSession { cameraService.session }
 
+    /// The camera service.
     private let cameraService: CameraServiceProtocol
 
+    /// The classification service.
     private let classificationService: ClassificationServiceProtocol
 
+    /// A published var for the latest classification.
     @Published public var currentClassification: Classification?
 
+    /// Wraps the `currentClassification` publisher.
     public var classificationPublisher: AnyPublisher<Classification?, Never> {
         return $currentClassification.eraseToAnyPublisher()
     }
 
-    private var orientation: Orientation = .portrait {
-        didSet {
-            print("Orientation is now: \(orientation)")
-        }
-    }
+    /// Store the last observed orientation.
+    private var orientation: Orientation = .portrait
 
     private var cameraSubscription: AnyCancellable?
     private var orientationSubscription: AnyCancellable?
@@ -161,6 +163,9 @@ public class CoreViewModel {
         setupPipeline()
     }
 
+    /// Links the camera service to the classification service and then links the classification result
+    /// to a publisher for consumption by the UI.
+    ///
     private func setupPipeline() {
 
         // Set up the camera service. We'll limit the identification rate to 2/sec to reduce energy use.
@@ -196,20 +201,24 @@ public class CoreViewModel {
 
     }
 
+    /// Set the orientation based on device orientation changes.
     private func set(orientation: Orientation) {
         self.orientation = orientation
         updatePreviewOrientation(to: orientation)
     }
 
+    /// Update the video preview to match the new device orientation.
     func updatePreviewOrientation(to orientation: Orientation) {
         // Nothing in this implementation. The child classes will override it and
         // implement their own solutions.
     }
 
+    /// Start video capture in the camera service.
     public func startVideoCapture() {
         cameraService.startVideoCapture()
     }
 
+    /// Stop video capture in the camera service.
     public func stopVideoCapture() {
         cameraService.stopVideoCapture()
     }
