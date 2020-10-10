@@ -90,9 +90,9 @@ public class ClassificationService: ClassificationServiceProtocol {
         }
         let classifications: [Classification]
         if let maxResults = maxResults {
-            classifications = classificationResults.sorted().prefix(maxResults).map { Classification(label: $0.identifier, confidence: $0.confidence) }
+            classifications = classificationResults.prefix(maxResults).map { Classification(label: $0.identifier, confidence: $0.confidence) }
         } else {
-            classifications = classificationResults.sorted().map { Classification(label: $0.identifier, confidence: $0.confidence) }
+            classifications = classificationResults.map { Classification(label: $0.identifier, confidence: $0.confidence) }
         }
         self.classificationPublisher.send(classifications)
     }
