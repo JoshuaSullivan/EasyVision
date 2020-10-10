@@ -11,11 +11,11 @@ public struct VideoPreview: UIViewRepresentable {
         let preview = VideoPreviewView(frame: .zero)
         preview.translatesAutoresizingMaskIntoConstraints = false
         return preview
-    }
+    }()
 
     public func makeUIView(context: Context) -> VideoPreviewView {
         preview.videoPreviewLayer.session = session
-        print("connection: \(preview.videoPreviewLayer.connection)")
+        print("connection: \(String(describing: preview.videoPreviewLayer.connection))")
         preview.videoPreviewLayer.videoGravity = .resizeAspectFill
         return preview
     }
