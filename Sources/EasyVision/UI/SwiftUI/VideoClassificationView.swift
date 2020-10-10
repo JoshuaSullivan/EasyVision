@@ -2,8 +2,14 @@ import SwiftUI
 import AVFoundation
 import Combine
 
+/// The `VideoClassificationView` provides a live video preview as well as a label
+/// showing the classification output of the MLModel.
+///
+/// - Note: This View does not have a preview, as the underlying VideoPreview cannot be previewed.
+///
 public struct VideoClassificationView<ViewModel: SwiftUIViewModelProtocol>: View {
 
+    /// The view model which handles obtaining classification results.
     @ObservedObject public var viewModel: ViewModel
 
     public var body: some View {
@@ -20,16 +26,5 @@ public struct VideoClassificationView<ViewModel: SwiftUIViewModelProtocol>: View
 
     public init(viewModel: ViewModel) {
         self.viewModel = viewModel
-    }
-}
-
-public struct VideoClassificationView_Previews: PreviewProvider {
-    private static let viewModel = SwiftUIViewModel(
-        cameraService: CameraService(),
-        classificationService: ClassificationService(model: MockModel())
-    )
-
-    public static var previews: some View {
-        VideoClassificationView(viewModel: viewModel)
     }
 }

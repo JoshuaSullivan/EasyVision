@@ -40,14 +40,23 @@ public class SwiftUIViewModel: CoreViewModel, SwiftUIViewModelProtocol {
 
     private var connection: AVCaptureConnection?
 
+    /// Initializes an instance of `SwiftUIViewModel`.
+    ///
+    /// - Parameter cameraService: An object conforming to `CameraServiceProtocol`
+    /// - Parameter classificationService: An object conforming to `ClassificationServiceProtocol`
+    ///
     override public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
+
+        // Instantiate the VideoPreviewView which underpins the VideoPreview.
         let preview = VideoPreviewView(frame: .zero)
         preview.translatesAutoresizingMaskIntoConstraints = false
         preview.videoPreviewLayer.videoGravity = .resizeAspectFill
         preview.videoPreviewLayer.session = cameraService.session
 
+        // Store a reference to the connection so that the orientation can be updated.
         connection = preview.videoPreviewLayer.connection
 
+        // Instantiate the videoPreview
         videoPreview = VideoPreview(preview: preview)
 
         super.init(cameraService: cameraService, classificationService: classificationService)

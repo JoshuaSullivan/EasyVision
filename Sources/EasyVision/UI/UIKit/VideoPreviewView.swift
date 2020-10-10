@@ -3,7 +3,7 @@ import AVFoundation
 import SwiftUI
 
 /// This simple view class makes it easy to add an `AVCaptureVideoPreviewLayer`
-/// via storyboards or SwiftUI.
+/// via storyboards or SwiftUI (in the form of `VideoPreview`).
 ///
 public class VideoPreviewView: UIView {
 

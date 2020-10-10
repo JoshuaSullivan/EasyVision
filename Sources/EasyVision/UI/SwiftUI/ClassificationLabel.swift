@@ -1,7 +1,11 @@
 import SwiftUI
 
+/// A view which presents a classification label and its associated confidence.
+///
 public struct ClassificationLabel: View {
 
+    /// The classification to display.
+    ///
     public var classification: Classification
 
     public var body: some View {
@@ -10,7 +14,7 @@ public struct ClassificationLabel: View {
                 .font(.subheadline)
             Spacer()
             Text(String(format: "%0.1f%%", arguments: [classification.confidence * 100.0]))
-                .font(Font.headline.monospacedDigit())
+                .font(Font.subheadline.monospacedDigit())
                 .padding(.leading, 16.0)
 
         }
@@ -23,6 +27,10 @@ public struct ClassificationLabel: View {
 
 public struct ClassificationLabel_Previews: PreviewProvider {
     public static var previews: some View {
-        ClassificationLabel(classification: Classification(label: "Fish", confidence: 0.675))
+        VStack {
+            ClassificationLabel(classification: Classification(label: "Fish", confidence: 0.675))
+            ClassificationLabel(classification: Classification(label: "Cat", confidence: 1.0))
+            ClassificationLabel(classification: Classification(label: "Dog", confidence: 0.046))
+        }.padding()
     }
 }
