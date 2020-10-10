@@ -10,7 +10,7 @@ public struct ClassificationLabel: View {
                 .font(.subheadline)
             Spacer()
             Text(String(format: "%0.1f%%", arguments: [classification.confidence * 100.0]))
-                .font(.headline.monospacedDigit())
+                .font(Font.headline.monospacedDigit())
                 .padding(.leading, 16.0)
 
         }

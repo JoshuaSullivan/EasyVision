@@ -15,7 +15,8 @@ public class ClassificationLabelView: UIView {
 
     private lazy var defaultConfidenceLabel: UILabel = {
         let label = UILabel(frame: .zero)
-        label.font = .preferredFont(forTextStyle: .subheadline).monospacedDigitFont
+        label.textAlignment = .right
+        label.font = UIFont.preferredFont(forTextStyle: .subheadline).monospacedDigitFont
         label.textColor = .white
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
