@@ -16,7 +16,28 @@ public enum Orientation: String, Equatable {
     case landscapeRight
 
     /// Device is upsidedown with the home button/indicator on the top.
-    case portraitUpsideDown
+    case upsideDown
+
+// MARK: - UIImage.Orientation
+
+    public var uiOrientation: UIImage.Orientation {
+        switch self {
+        case .portrait: return .up
+        case .landscapeLeft: return .left
+        case .landscapeRight: return .right
+        case .upsideDown: return .up
+        }
+    }
+
+    public init(uiOrientation: UIImage.Orientation) {
+        switch uiOrientation {
+        case .up: self = .portrait
+        case .left: self = .landscapeLeft
+        case .right: self = .landscapeRight
+        case .down, .upMirrored: self = .upsideDown
+        default: self = .portrait
+        }
+    }
 
 // MARK: - CGImagePropertyOrientation
 
@@ -27,7 +48,7 @@ public enum Orientation: String, Equatable {
         case .portrait: return .up
         case .landscapeLeft: return .left
         case .landscapeRight: return .right
-        case .portraitUpsideDown: return .upMirrored
+        case .upsideDown: return .upMirrored
         }
     }
 
@@ -38,7 +59,7 @@ public enum Orientation: String, Equatable {
         case .up: self = .portrait
         case .left: self = .landscapeLeft
         case .right: self = .landscapeRight
-        case .upMirrored: self = .portraitUpsideDown
+        case .upMirrored: self = .upsideDown
         default: self = .portrait
         }
     }
@@ -48,18 +69,18 @@ public enum Orientation: String, Equatable {
     public var deviceOrientation: UIDeviceOrientation {
         switch self {
         case .portrait: return .portrait
-        case .landscapeLeft: return .landscapeLeft
-        case .landscapeRight: return .landscapeRight
-        case .portraitUpsideDown: return .portraitUpsideDown
+        case .landscapeLeft: return .landscapeRight
+        case .landscapeRight: return .landscapeLeft
+        case .upsideDown: return .portraitUpsideDown
         }
     }
 
     public init(deviceOrientation: UIDeviceOrientation) {
         switch deviceOrientation {
         case .portrait: self = .portrait
-        case .landscapeRight: self = .landscapeRight
-        case .landscapeLeft: self = .landscapeLeft
-        case .portraitUpsideDown: self = .portraitUpsideDown
+        case .landscapeRight: self = .landscapeLeft
+        case .landscapeLeft: self = .landscapeRight
+        case .portraitUpsideDown: self = .upsideDown
         default: self = .portrait
         }
     }
@@ -71,7 +92,7 @@ public enum Orientation: String, Equatable {
         case .portrait: return .portrait
         case .landscapeLeft: return .landscapeLeft
         case .landscapeRight: return .landscapeRight
-        case .portraitUpsideDown: return .portraitUpsideDown
+        case .upsideDown: return .portraitUpsideDown
         }
     }
 
@@ -80,7 +101,7 @@ public enum Orientation: String, Equatable {
         case .portrait: self = .portrait
         case .landscapeLeft: self = .landscapeLeft
         case .landscapeRight: self = .landscapeRight
-        case .portraitUpsideDown: self = .portraitUpsideDown
+        case .portraitUpsideDown: self = .upsideDown
         default: self = .portrait
         }
     }

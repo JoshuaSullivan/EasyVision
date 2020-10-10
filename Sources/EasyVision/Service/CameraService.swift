@@ -179,7 +179,7 @@ public class CameraService: NSObject, CameraServiceProtocol {
     }
 
     private func set(orientation: UIDeviceOrientation) {
-        print("Camera Service orientation: \(orientation)")
+        print("Camera Service orientation: \(orientation.rawValue)")
         orientationPublisher.send(Orientation(deviceOrientation: orientation))
     }
 }
