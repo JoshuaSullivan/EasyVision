@@ -7,8 +7,9 @@ public struct VideoPreview: UIViewRepresentable {
 
     let session: AVCaptureSession
 
+    let preview: VideoPreviewView = VideoPreviewView(frame: .zero)
+
     public func makeUIView(context: Context) -> VideoPreviewView {
-        let preview = VideoPreviewView(frame: .zero)
         preview.videoPreviewLayer.session = session
         return preview
     }

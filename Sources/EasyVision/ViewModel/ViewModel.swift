@@ -43,6 +43,15 @@ public class SwiftUIViewModel: CoreViewModel, SwiftUIViewModelProtocol {
     override public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
         super.init(cameraService: cameraService, classificationService: classificationService)
     }
+
+    override func updatePreviewOrientation(to orientation: Orientation) {
+        guard
+            let connection = videoPreview.preview.videoPreviewLayer.connection,
+            connection.isVideoOrientationSupported
+        else { return }
+
+        connection.videoOrientation = orientation.avOrientation
+    }
 }
 
 // MARK: - UIKit
