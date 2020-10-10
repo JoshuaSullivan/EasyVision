@@ -35,8 +35,8 @@ public class VideoClassificationViewController: UIViewController {
 
             labelView.translatesAutoresizingMaskIntoConstraints = false
             labelView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-            labelView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 16).isActive = true
-            labelView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -32).isActive = true
+            labelView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
+            labelView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
             self.labelView = labelView
         }
     }

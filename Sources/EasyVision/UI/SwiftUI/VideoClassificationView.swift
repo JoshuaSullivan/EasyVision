@@ -11,7 +11,7 @@ public struct VideoClassificationView<ViewModel: SwiftUIViewModelProtocol>: View
             VideoPreview(session: viewModel.session)
             viewModel.currentClassification.map { classification in
                 ClassificationLabel(classification: classification)
-                    .padding(EdgeInsets(top: 0, leading: 8, bottom: 16, trailing: 8))
+                    .padding(EdgeInsets(top: 0, leading: 8, bottom: 40, trailing: 8))
             }
         }
         .onAppear { viewModel.startVideoCapture() }

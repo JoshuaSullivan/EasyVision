@@ -15,7 +15,7 @@ public class ClassificationLabelView: UIView {
 
     private lazy var defaultConfidenceLabel: UILabel = {
         let label = UILabel(frame: .zero)
-        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.font = .preferredFont(forTextStyle: .subheadline).monospacedDigitFont
         label.textColor = .white
         label.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -63,6 +63,6 @@ public class ClassificationLabelView: UIView {
 
     public func update(with classification: Classification) {
         featureLabel?.text = classification.label
-        confidenceLabel?.text = String(format: "%0.1f%", arguments: [classification.confidence])
+        confidenceLabel?.text = String(format: "%0.1f%%", arguments: [classification.confidence * 100.0])
     }
 }
