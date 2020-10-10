@@ -5,18 +5,9 @@ import AVFoundation
 ///
 public struct VideoPreview: UIViewRepresentable {
 
-    let session: AVCaptureSession
-
-    let preview: VideoPreviewView = {
-        let preview = VideoPreviewView(frame: .zero)
-        preview.translatesAutoresizingMaskIntoConstraints = false
-        return preview
-    }()
+    let preview: VideoPreviewView
 
     public func makeUIView(context: Context) -> VideoPreviewView {
-        preview.videoPreviewLayer.session = session
-        print("connection: \(String(describing: preview.videoPreviewLayer.connection))")
-        preview.videoPreviewLayer.videoGravity = .resizeAspectFill
         return preview
     }
 

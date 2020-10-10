@@ -41,14 +41,21 @@ public class SwiftUIViewModel: CoreViewModel, SwiftUIViewModelProtocol {
     private var connection: AVCaptureConnection?
 
     override public init(cameraService:CameraServiceProtocol, classificationService: ClassificationServiceProtocol) {
-        videoPreview = VideoPreview(session: cameraService.session)
-        connection = videoPreview.preview.videoPreviewLayer.connection
+        let preview = VideoPreviewView(frame: .zero)
+        preview.translatesAutoresizingMaskIntoConstraints = false
+        preview.videoPreviewLayer.videoGravity = .resizeAspectFill
+        preview.videoPreviewLayer.session = cameraService.session
+
+        connection = preview.videoPreviewLayer.connection
+
+        videoPreview = VideoPreview(preview: preview)
+
         super.init(cameraService: cameraService, classificationService: classificationService)
     }
 
     override func updatePreviewOrientation(to orientation: Orientation) {
         guard
-            let connection = videoPreview.preview.videoPreviewLayer.connection,
+            let connection = connection,
             connection.isVideoOrientationSupported
         else { return }
 
