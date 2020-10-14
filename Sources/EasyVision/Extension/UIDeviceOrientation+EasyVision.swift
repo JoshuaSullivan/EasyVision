@@ -6,7 +6,7 @@ public extension UIDeviceOrientation {
     /// Convert the device orientation into a video orientation.
     var videoOrientation: AVCaptureVideoOrientation {
         switch self {
-        case .faceDown, .faceUp, .portrait: return .portrait
+        case .portrait: return .portrait
         case .landscapeLeft: return .landscapeRight
         case .landscapeRight: return .landscapeLeft
         case .portraitUpsideDown: return .portraitUpsideDown
