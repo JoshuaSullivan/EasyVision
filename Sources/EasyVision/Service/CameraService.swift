@@ -34,7 +34,7 @@ public protocol CameraServiceProtocol: class {
     ///
     /// The `Orientation` type is a convenient bridge between the different orientation systems encountered.
     ///
-    var orientation: AnyPublisher<Orientation, Never> { get }
+    var orientation: AnyPublisher<UIDeviceOrientation, Never> { get }
 
     /// Start live video capture.
     func startVideoCapture()
@@ -77,9 +77,9 @@ public class CameraService: NSObject, CameraServiceProtocol {
 
     private var orientationSubscription: AnyCancellable?
 
-    private var orientationPublisher = CurrentValueSubject<Orientation, Never>(.portrait)
+    private var orientationPublisher = CurrentValueSubject<UIDeviceOrientation, Never>(.portrait)
 
-    public var orientation: AnyPublisher<Orientation, Never> {
+    public var orientation: AnyPublisher<UIDeviceOrientation, Never> {
         orientationPublisher.share().eraseToAnyPublisher()
     }
 
@@ -180,7 +180,7 @@ public class CameraService: NSObject, CameraServiceProtocol {
 
     private func set(orientation: UIDeviceOrientation) {
         print("Camera Service orientation: \(orientation.rawValue)")
-        orientationPublisher.send(Orientation(deviceOrientation: orientation))
+        orientationPublisher.send(orientation)
     }
 }
 

@@ -62,13 +62,13 @@ public class SwiftUIViewModel: ViewModelCore, SwiftUIViewModelProtocol {
         super.init(cameraService: cameraService, classificationService: classificationService)
     }
 
-    override func updatePreviewOrientation(to orientation: Orientation) {
+    override func updatePreviewOrientation(to orientation: UIDeviceOrientation) {
         guard
             let connection = connection,
             connection.isVideoOrientationSupported
         else { return }
 
-        connection.videoOrientation = orientation.avOrientation
+        connection.videoOrientation = orientation.videoOrientation
     }
 }
 
@@ -113,13 +113,13 @@ public class UIKitViewModel: ViewModelCore, UIKitViewModelProtocol {
         super.init(cameraService: cameraService, classificationService: classificationService)
     }
 
-    override func updatePreviewOrientation(to orientation: Orientation) {
+    override func updatePreviewOrientation(to orientation: UIDeviceOrientation) {
         guard
             let connection = previewView.videoPreviewLayer.connection,
             connection.isVideoOrientationSupported
         else { return }
 
-        connection.videoOrientation = orientation.avOrientation
+        connection.videoOrientation = orientation.videoOrientation
     }
 }
 
@@ -150,7 +150,7 @@ public class ViewModelCore {
     }
 
     /// Store the last observed orientation.
-    private var orientation: Orientation = .portrait
+    private var orientation: UIDeviceOrientation = .portrait
 
     private var cameraSubscription: AnyCancellable?
     private var orientationSubscription: AnyCancellable?
@@ -178,7 +178,7 @@ public class ViewModelCore {
                 },
                 receiveValue: { [weak self] pixelBuffer in
                     guard let self = self else { return }
-                    self.classificationService.classify(image: pixelBuffer, orientation: self.orientation.cgOrientation)
+                    self.classificationService.classify(image: pixelBuffer, orientation: self.orientation.visionOrientation)
                 }
             )
 
@@ -202,13 +202,13 @@ public class ViewModelCore {
     }
 
     /// Set the orientation based on device orientation changes.
-    private func set(orientation: Orientation) {
+    private func set(orientation: UIDeviceOrientation) {
         self.orientation = orientation
         updatePreviewOrientation(to: orientation)
     }
 
     /// Update the video preview to match the new device orientation.
-    func updatePreviewOrientation(to orientation: Orientation) {
+    func updatePreviewOrientation(to orientation: UIDeviceOrientation) {
         // Nothing in this implementation. The child classes will override it and
         // implement their own solutions.
     }
