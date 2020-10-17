@@ -14,7 +14,7 @@ public protocol SwiftUIViewModelProtocol : ObservableObject {
     ///
     /// Used to start/stop video capture as well as configuring the `AVCaptureVideoPreviewLayer`.
     ///
-    var session: AVCaptureSession { get }
+    var session: CaptureSession { get }
 
     /// Returns a preview view for displaying live video.
     var videoPreview: VideoPreview { get }
@@ -51,7 +51,7 @@ public class SwiftUIViewModel: ViewModelCore, SwiftUIViewModelProtocol {
         let preview = VideoPreviewView(frame: .zero)
         preview.translatesAutoresizingMaskIntoConstraints = false
         preview.videoPreviewLayer.videoGravity = .resizeAspectFill
-        preview.videoPreviewLayer.session = cameraService.session
+        preview.videoPreviewLayer.session = cameraService.session.avSession
 
         // Store a reference to the connection so that the orientation can be updated.
         connection = preview.videoPreviewLayer.connection
@@ -104,7 +104,7 @@ public class UIKitViewModel: ViewModelCore, UIKitViewModelProtocol {
     public lazy var previewView: VideoPreviewView = {
         let view = VideoPreviewView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.videoPreviewLayer.session = session
+        view.videoPreviewLayer.session = session.avSession
         view.videoPreviewLayer.videoGravity = .resizeAspectFill
         return view
     }()
@@ -133,7 +133,7 @@ public class UIKitViewModel: ViewModelCore, UIKitViewModelProtocol {
 public class ViewModelCore {
 
     /// The capture session which drives the live video.
-    public var session: AVCaptureSession { cameraService.session }
+    public var session: CaptureSession { cameraService.session }
 
     /// The camera service.
     private let cameraService: CameraServiceProtocol

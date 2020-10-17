@@ -14,7 +14,7 @@ public enum CameraServiceError: Error {
 public protocol CameraServiceProtocol: class {
 
     /// The underlying AVCaptureSession. Useful for setting up video preview layers.
-    var session: AVCaptureSession { get }
+    var session: CaptureSession { get }
 
     /// A publisher that will emit captured photos when the capture button is tapped.
     var imageOutput: AnyPublisher<UIImage, CameraServiceError> { get }
@@ -57,6 +57,14 @@ public protocol CameraServiceProtocol: class {
 ///
 public class CameraService: NSObject, CameraServiceProtocol {
 
+    public static var defaultDiscoverySession: DiscoverySession {
+        AVCaptureDevice.DiscoverySession(
+            deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera],
+            mediaType: .video,
+            position: .unspecified
+        )
+    }
+
     public var imageOutput: AnyPublisher<UIImage, CameraServiceError> {
         return imagePublisher
             .share()
@@ -73,7 +81,10 @@ public class CameraService: NSObject, CameraServiceProtocol {
     }
 
     /// The AVCaptureSession driving the live video.
-    private(set) public var session = AVCaptureSession()
+    private(set) public var session: CaptureSession
+
+    /// The device for getting orientation values.
+    private var device: Device
 
     private var orientationSubscription: AnyCancellable?
 
@@ -100,7 +111,14 @@ public class CameraService: NSObject, CameraServiceProtocol {
 
     /// Create an instance of the CameraService.
     ///
-    public override init() {
+    public init(
+        discoverySession: DiscoverySession = CameraService.defaultDiscoverySession,
+        captureSession: CaptureSession = AVCaptureSession(),
+        device: Device = UIDevice.current
+    ) {
+
+        self.session = captureSession
+        self.device = device
 
         super.init()
 
@@ -153,23 +171,23 @@ public class CameraService: NSObject, CameraServiceProtocol {
         orientationSubscription = NotificationCenter.default
             .publisher(for: UIDevice.orientationDidChangeNotification)
             .sink { [weak self] _ in
-                self?.set(orientation: UIDevice.current.orientation)
+                self?.set(orientation: device.orientation)
             }
-        set(orientation: UIDevice.current.orientation)
+        set(orientation: device.orientation)
     }
 
-// MARK: - CameraServiceProtocol
+    // MARK: - CameraServiceProtocol
 
     // Protocol implementation.
     public func startVideoCapture() {
         session.startRunning()
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
+        device.beginGeneratingDeviceOrientationNotifications()
     }
 
     // Protocol implementation.
     public func stopVideoCapture() {
         session.stopRunning()
-        UIDevice.current.endGeneratingDeviceOrientationNotifications()
+        device.endGeneratingDeviceOrientationNotifications()
     }
 
     // Protocol implementation.
@@ -179,7 +197,6 @@ public class CameraService: NSObject, CameraServiceProtocol {
     }
 
     private func set(orientation: UIDeviceOrientation) {
-        print("Camera Service orientation: \(orientation.rawValue)")
         orientationPublisher.send(orientation)
     }
 }

@@ -15,7 +15,12 @@ public struct VideoClassificationView<ViewModel: SwiftUIViewModelProtocol>: View
     public var body: some View {
         ZStack(alignment: .bottom) {
             viewModel.videoPreview
-            viewModel.currentClassification.map { classification in
+
+// Interesting: The use of if-let in function builders is a Swift 5.3 feature,
+//              not anything to do with iOS 14 or the updated SwiftUI. Therefore,
+//              we can use it even on code targeting iOS 13. Neat!
+
+            if let classification = viewModel.currentClassification {
                 ClassificationLabel(classification: classification)
                     .padding(EdgeInsets(top: 0, leading: 8, bottom: 40, trailing: 8))
             }
