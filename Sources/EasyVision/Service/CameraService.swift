@@ -114,7 +114,8 @@ public class CameraService: NSObject, CameraServiceProtocol {
     public init(
         discoverySession: DiscoverySession = CameraService.defaultDiscoverySession,
         captureSession: CaptureSession = AVCaptureSession(),
-        device: Device = UIDevice.current
+        device: Device = UIDevice.current,
+        inputHelper: CaptureInputHelperProtocol = CaptureInputHelper()
     ) {
 
         self.session = captureSession
@@ -123,8 +124,6 @@ public class CameraService: NSObject, CameraServiceProtocol {
         super.init()
 
         // Use the discovery session API to reliably find a camera to use.
-        let discoverySession = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera], mediaType: .video, position: .unspecified)
         guard let inputDevice = discoverySession.devices.first else {
             assertionFailure("Could not find any suitable cameras.")
             return
@@ -139,7 +138,7 @@ public class CameraService: NSObject, CameraServiceProtocol {
 
         // Check to see if we can add the video input to the session, then add it.
         guard
-            let videoInput = try? AVCaptureDeviceInput(device: inputDevice),
+            let videoInput = try? inputHelper.input(for: inputDevice),
             session.canAddInput(videoInput)
         else {
             assertionFailure("Could not add video input.")
