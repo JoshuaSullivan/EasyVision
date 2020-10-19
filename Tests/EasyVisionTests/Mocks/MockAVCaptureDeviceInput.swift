@@ -4,15 +4,6 @@ final class MockAVCaptureDeviceInput: AVCaptureDeviceInput {
 
     @objc dynamic private convenience init(mock: String) { fatalError() }
 
-    convenience init(mockDevice: AVCaptureDevice) {
-        do {
-            try self.init(device: mockDevice)
-        } catch {
-            print(error)
-            fatalError()
-        }
-    }
-
     private class func mock() -> MockAVCaptureDeviceInput {
         let input = MockAVCaptureDeviceInput(mock: "mock")
         return input

@@ -1,6 +1,6 @@
 import Foundation
 
-/// Swizzle the i
+/// Swizzle the init method of a class with NSObject.init
 /// From: https://nshint.github.io/blog/2019/04/08/testing-the-camera-on-the-simulator/
 ///
 struct Swizzler {
