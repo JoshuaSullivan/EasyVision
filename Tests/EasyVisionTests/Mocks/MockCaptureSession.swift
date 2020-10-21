@@ -17,22 +17,12 @@ class MockCaptureSession: CaptureSession {
         actions.append("commitConfiguration")
     }
 
-    func canAddInput(_ input: AVCaptureInput) -> Bool {
-        actions.append("canAddInput")
-        return canAddResult
+    func add(input: CaptureInput) throws {
+        actions.append("add(input:)")
     }
 
-    func addInput(_ input: AVCaptureInput) {
-        actions.append("addInput")
-    }
-
-    func canAddOutput(_ output: AVCaptureOutput) -> Bool {
-        actions.append("canAddOutput")
-        return canAddResult
-    }
-
-    func addOutput(_ output: AVCaptureOutput) {
-        actions.append("addOutput")
+    func add(output: CaptureOutput) throws {
+        actions.append("add(output:)")
     }
 
     func startRunning() {

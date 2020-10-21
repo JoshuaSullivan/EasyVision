@@ -95,10 +95,10 @@ public class CameraService: NSObject, CameraServiceProtocol {
     }
 
     /// Keep a reference to the photo output so we can trigger a photo capture.
-    private var photoOutput = AVCapturePhotoOutput()
+    private var photoOutput: CapturePhotoOutput
 
     /// Keep a reference to the pixel buffer output so we can disable that independently, should we need to.
-    private var pixelOutput = AVCaptureVideoDataOutput()
+    private var pixelOutput: CaptureDataOutput
 
     /// The underlying publisher for the `imageOutput` property.
     private let imagePublisher = PassthroughSubject<UIImage, CameraServiceError>()
@@ -115,11 +115,14 @@ public class CameraService: NSObject, CameraServiceProtocol {
         discoverySession: DiscoverySession = CameraService.defaultDiscoverySession,
         captureSession: CaptureSession = AVCaptureSession(),
         device: Device = UIDevice.current,
-        inputHelper: CaptureInputHelperProtocol = CaptureInputHelper()
+        inputHelper: CaptureInputHelperProtocol = CaptureInputHelper(),
+        outputHelper: CaptureOutputHelperProtocol = CaptureOutputHelper()
     ) {
 
         self.session = captureSession
         self.device = device
+        pixelOutput = outputHelper.pixelBufferOutput
+        photoOutput = outputHelper.photoOutput
 
         super.init()
 
@@ -136,22 +139,22 @@ public class CameraService: NSObject, CameraServiceProtocol {
         // important command is always run last.
         defer { session.commitConfiguration() }
 
-        // Check to see if we can add the video input to the session, then add it.
-        guard
-            let videoInput = try? inputHelper.input(for: inputDevice),
-            session.canAddInput(videoInput)
-        else {
-            assertionFailure("Could not add video input.")
+        // Create and add the video input.
+        do {
+            let videoInput = try inputHelper.input(for: inputDevice)
+            try session.add(input: videoInput)
+        } catch {
+            assertionFailure("Failed to add input to session.")
             return
         }
-        session.addInput(videoInput)
 
-        // Check to see if we can add the photo output to the session, then add it.
-        guard session.canAddOutput(photoOutput) else {
-            assertionFailure("Could not add photo output.")
+        // Try to add the photo output.
+        do {
+            try session.add(output: photoOutput)
+        } catch {
+            assertionFailure("Failed to add photo output.")
             return
         }
-        session.addOutput(photoOutput)
 
         // Configure the pixel buffer output.
         pixelOutput.alwaysDiscardsLateVideoFrames = true
@@ -160,12 +163,13 @@ public class CameraService: NSObject, CameraServiceProtocol {
         ]
         pixelOutput.setSampleBufferDelegate(self, queue: sampleQueue)
 
-        // Add it to the session.
-        guard session.canAddOutput(pixelOutput) else {
+        // Add the pixel output.
+        do {
+            try session.add(output: pixelOutput)
+        } catch {
             assertionFailure("Could not add pixel buffer output.")
             return
         }
-        session.addOutput(pixelOutput)
 
         orientationSubscription = NotificationCenter.default
             .publisher(for: UIDevice.orientationDidChangeNotification)

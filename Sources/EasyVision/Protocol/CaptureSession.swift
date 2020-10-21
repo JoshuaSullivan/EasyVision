@@ -6,10 +6,8 @@ import AVFoundation
 public protocol CaptureSession {
     func beginConfiguration()
     func commitConfiguration()
-    func canAddInput(_ input: AVCaptureInput) -> Bool
-    func addInput(_ input: AVCaptureInput)
-    func canAddOutput(_ output: AVCaptureOutput) -> Bool
-    func addOutput(_ output: AVCaptureOutput)
+    func add(input: CaptureInput) throws
+    func add(output: CaptureOutput) throws
     func startRunning()
     func stopRunning()
 
@@ -23,4 +21,26 @@ extension AVCaptureSession: CaptureSession {
     public var avSession: AVCaptureSession {
         return self
     }
+
+    public func add(input: CaptureInput) throws {
+        guard
+            let avInput = input as? AVCaptureInput,
+            self.canAddInput(avInput)
+        else {
+            throw CaptureError.unableToAddInput
+        }
+        self.addInput(avInput)
+    }
+
+    public func add(output: CaptureOutput) throws {
+        guard
+            let avOutput = output as? AVCaptureOutput,
+            self.canAddOutput(avOutput)
+        else {
+            throw CaptureError.unableToAddOutput
+        }
+        self.addOutput(avOutput)
+    }
 }
+
+
