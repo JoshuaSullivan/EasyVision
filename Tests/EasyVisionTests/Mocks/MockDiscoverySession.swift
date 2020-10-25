@@ -1,15 +1,20 @@
 import AVFoundation
 import EasyVision
 
-class MockDiscoverySession: DiscoverySession {
+final class MockDiscoverySession: DiscoverySession {
+
+    enum Action {
+        case discoveredDevices
+    }
+
     /// A log of calls to this object.
-    var actions: [String] = []
+    var actions: [Action] = []
 
     /// Allow us to control the results of the discovery session.
     var mockDevices: [CaptureDevice] = []
 
     var discoveredDevices: [CaptureDevice] {
-        actions.append("devices")
+        actions.append(.discoveredDevices)
         return mockDevices
     }
 }

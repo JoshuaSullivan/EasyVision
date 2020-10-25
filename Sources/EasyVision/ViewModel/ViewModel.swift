@@ -178,7 +178,10 @@ public class ViewModelCore {
                 },
                 receiveValue: { [weak self] pixelBuffer in
                     guard let self = self else { return }
-                    self.classificationService.classify(image: pixelBuffer, orientation: self.orientation.visionOrientation)
+                    self.classificationService.classify(
+                        image: CIImage(cvPixelBuffer: pixelBuffer),
+                        orientation: self.orientation.visionOrientation
+                    )
                 }
             )
 

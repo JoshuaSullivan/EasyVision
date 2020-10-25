@@ -1,5 +1,5 @@
 import Foundation
-import AVFoundation
+import CoreImage
 import CoreML
 import Vision
 import Combine
@@ -8,6 +8,7 @@ import Combine
 ///
 public enum ClassificationServiceError: Error {
     case unableToClassifyImage
+    case modelMustBeMLModel
 }
 
 /// A protocol describing the public interface of the ClassificationService.
@@ -25,13 +26,14 @@ public protocol ClassificationServiceProtocol: class {
     ///
     /// The result will be emitted by the `classifications` publisher asynchronously.
     ///
-    /// - Parameter image: A CVPixelBuffer containing the image to be classified. The pixel buffer will
-    ///                    be automatically resized using the `.centerCrop` method if it is not square.
+    /// - Parameter image: A CIImage containing the image to be classified (usually wrapping a
+    ///                    `CVPixelBuffer`). The image will be automatically resized using the
+    ///                    `.centerCrop` method if it is not square.
     /// - Parameter orientation: The orientation of the image. It is important to pass this in with live
     ///                          video, or you will get very poor classification results. The current
     ///                          device orientation can be obtained from `UIDevice.current.orientation`.
     ///
-    func classify(image: CVPixelBuffer, orientation: CGImagePropertyOrientation)
+    func classify(image: CIImage, orientation: CGImagePropertyOrientation)
 
     /// Limits the number of classification results to only the N with the highest confidence values.
     /// The default value is `nil` which does not limit the number of results.
@@ -97,9 +99,10 @@ public class ClassificationService: ClassificationServiceProtocol {
         self.classificationPublisher.send(classifications)
     }
 
-    public func classify(image: CVPixelBuffer, orientation: CGImagePropertyOrientation) {
+    public func classify(image: CIImage, orientation: CGImagePropertyOrientation) {
         DispatchQueue.global(qos: .default).async {
-            let handler = VNImageRequestHandler(cvPixelBuffer: image, orientation: orientation)
+            let handler = VNImageRequestHandler(ciImage: image,
+                                                orientation: orientation)
             do {
                 try handler.perform([self.request])
             } catch {

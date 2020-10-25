@@ -86,12 +86,15 @@ public class CameraService: NSObject, CameraServiceProtocol {
     /// The device for getting orientation values.
     private var device: Device
 
+    /// Combine subscription for the orientation notifications.
     private var orientationSubscription: AnyCancellable?
 
+    /// Subject to send orientation changes.
     private var orientationPublisher = CurrentValueSubject<UIDeviceOrientation, Never>(.portrait)
 
+    // Protocol implementation.
     public var orientation: AnyPublisher<UIDeviceOrientation, Never> {
-        orientationPublisher.share().eraseToAnyPublisher()
+        orientationPublisher.eraseToAnyPublisher()
     }
 
     /// Keep a reference to the photo output so we can trigger a photo capture.

@@ -19,6 +19,7 @@ public protocol CaptureDataOutput: CaptureOutput {
         _ sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate?,
         queue : DispatchQueue?
     )
+
 }
 
 extension AVCaptureVideoDataOutput: CaptureDataOutput {}

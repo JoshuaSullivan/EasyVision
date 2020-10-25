@@ -1,8 +1,15 @@
 import AVFoundation
 import EasyVision
 
-struct MockCaptureInputHelper: CaptureInputHelperProtocol {
+final class MockCaptureInputHelper: CaptureInputHelperProtocol {
+
+    enum Action {
+        case inputForDevice
+    }
+    public var actions: [Action] = []
+
     func input(for device: CaptureDevice) throws -> CaptureInput {
-        MockCaptureInput()
+        actions.append(.inputForDevice)
+        return MockCaptureInput()
     }
 }

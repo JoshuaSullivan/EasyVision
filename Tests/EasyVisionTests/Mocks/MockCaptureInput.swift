@@ -1,4 +1,4 @@
 import Foundation
 import EasyVision
 
-class MockCaptureInput: CaptureInput {}
+final class MockCaptureInput: CaptureInput {}

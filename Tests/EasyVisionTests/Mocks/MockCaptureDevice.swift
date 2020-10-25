@@ -1,6 +1,4 @@
 import Foundation
 import EasyVision
 
-class MockCaptureDevice: CaptureDevice {
-    
-}
+final class MockCaptureDevice: CaptureDevice {}
