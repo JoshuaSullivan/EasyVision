@@ -1,5 +1,9 @@
 import AVFoundation
 
+enum CaptureHelperError: Error {
+    case inputNotAVCaptureDevice
+}
+
 /// This protcol allows us to mock device input creation for testing purposes.
 ///
 public protocol CaptureInputHelperProtocol {
@@ -10,7 +14,7 @@ public protocol CaptureInputHelperProtocol {
     ///
     /// - Parameter device: The `AVCaptureDevice` to create the input with.
     ///
-    func input(for device: AVCaptureDevice) throws -> CaptureInput
+    func input(for device: CaptureDevice) throws -> CaptureInput
 }
 
 public struct CaptureInputHelper: CaptureInputHelperProtocol {
@@ -18,8 +22,11 @@ public struct CaptureInputHelper: CaptureInputHelperProtocol {
     /// A public initializer that does nothing.
     public init() {}
 
-    public func input(for device: AVCaptureDevice) throws -> CaptureInput {
-        try AVCaptureDeviceInput(device: device)
+    public func input(for device: CaptureDevice) throws -> CaptureInput {
+        guard let avDevice = device as? AVCaptureDevice else {
+            throw CaptureHelperError.inputNotAVCaptureDevice
+        }
+        return try AVCaptureDeviceInput(device: avDevice)
     }
 }
 

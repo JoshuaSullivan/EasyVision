@@ -127,7 +127,7 @@ public class CameraService: NSObject, CameraServiceProtocol {
         super.init()
 
         // Use the discovery session API to reliably find a camera to use.
-        guard let inputDevice = discoverySession.devices.first else {
+        guard let inputDevice = discoverySession.discoveredDevices.first else {
             assertionFailure("Could not find any suitable cameras.")
             return
         }

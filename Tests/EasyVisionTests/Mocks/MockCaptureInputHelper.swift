@@ -2,7 +2,7 @@ import AVFoundation
 import EasyVision
 
 struct MockCaptureInputHelper: CaptureInputHelperProtocol {
-    func input(for device: AVCaptureDevice) throws -> CaptureInput {
+    func input(for device: CaptureDevice) throws -> CaptureInput {
         MockCaptureInput()
     }
 }

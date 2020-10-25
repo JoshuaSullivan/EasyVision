@@ -27,7 +27,8 @@ class CameraServiceTests: XCTestCase {
     }
 
     func testStartVideoCapture() {
-        discoverySession.mockDevices = [MockAVCaptureDevice.createMock()!]
+        let device = MockCaptureDevice()
+        discoverySession.mockDevices = [device]
         createSubject()
         subject.startVideoCapture()
         XCTAssert(true)

@@ -17,7 +17,7 @@ public protocol CaptureDataOutput: CaptureOutput {
     var videoSettings: [String : Any]! { get set }
     func setSampleBufferDelegate(
         _ sampleBufferDelegate: AVCaptureVideoDataOutputSampleBufferDelegate?,
-        queue sampleBufferCallbackQueue: DispatchQueue?
+        queue : DispatchQueue?
     )
 }
 

@@ -6,9 +6,9 @@ class MockDiscoverySession: DiscoverySession {
     var actions: [String] = []
 
     /// Allow us to control the results of the discovery session.
-    var mockDevices: [AVCaptureDevice] = []
+    var mockDevices: [CaptureDevice] = []
 
-    var devices: [AVCaptureDevice] {
+    var discoveredDevices: [CaptureDevice] {
         actions.append("devices")
         return mockDevices
     }
